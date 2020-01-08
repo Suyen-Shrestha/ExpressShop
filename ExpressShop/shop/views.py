@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView, View
 from .models import Item, OrderItem, Order
-
+from .forms import CheckoutForm
 
 class HomeView(ListView):
     model = Item
@@ -31,6 +31,23 @@ class OrderSummaryView(LoginRequiredMixin, View):
             return redirect("/")
             messages.error(self.request, "You do not have an active order.")
 
+
+class CheckoutView(View):
+    def get(self, *args, **kwargs):
+        form = CheckoutForm()
+        context = {
+            'form': form,
+        }
+        return render(self.request, "checkout-page.html", context)
+
+    def post(self, *args, **kwargs):
+        form = CheckoutForm(self.request.POST or None)
+        if form.is_valid():
+
+            print("Form is valid")
+            return redirect("shop:checkout")
+        messages.warning(self.request, "Failed Checkout")
+        return redirect("shop:checkout")
 
 @login_required
 def add_to_cart(request, slug):
