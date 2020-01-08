@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'crispy_forms',
     'django_countries',
+    'stripe',
 ]
 
 MIDDLEWARE = [
@@ -133,6 +134,18 @@ MEDIA_URL = '/media/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media_root')
+
+
+
+# Stripe config
+if DEBUG:
+    #test keys
+    STRIPE_PUBLISHABLE_KEY = 'pk_test_gpxbr6x2nLjYWmkLiD0monML00F0hf9Yv1'
+    STRIPE_SECRET_KEY = 'sk_test_FxIGmlbHiWvK7B9OPl0pTs4Q00Au31ApsG'
+else:
+    #live keys
+    STRIPE_PUBLISHABLE_KEY = ''
+    STRIPE_SECRET_KEY = ''
 
 
 
