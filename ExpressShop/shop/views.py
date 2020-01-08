@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.contrib import messages
@@ -8,6 +9,14 @@ from django.views.generic import ListView, DetailView, View
 from .models import Item, OrderItem, Order, BillingAddress
 from .forms import CheckoutForm
 
+
+import stripe
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
+# `source` is obtained with Stripe.js; see https://stripe.com/docs/payments/accept-a-payment-charges#web-create-token
+
+
+
 class HomeView(ListView):
     model = Item
     paginate_by = 10
@@ -17,6 +26,24 @@ class HomeView(ListView):
 class ItemDetailView(DetailView):
     model = Item
     template_name = "product-page.html"
+
+
+class PaymentView(View):
+    def get(self, *args, **kwargs):
+        #order
+        return render(self.request, "payment.html")
+
+    def post(self, *args, **kwargs):
+        order = Order.objects.get(user=self.request.user, ordered=False)
+        token = self.request.POST.get('stripeToken')
+        stripe.Charge.create(
+            amount=order.get_total(),
+            currency="usd",
+            source=token,
+            description="Charge for jenny.rosen@example.com",
+        )
+        order.ordered= True
+
 
 
 class OrderSummaryView(LoginRequiredMixin, View):
