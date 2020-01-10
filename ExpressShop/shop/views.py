@@ -8,7 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView, View
 from .models import Item, OrderItem, Order, Address, Payment, Coupon, Refund
 from .forms import CheckoutForm, CouponForm, RefundForm
-
+from django.db.models import Q
 
 import random
 import string
@@ -33,6 +33,22 @@ class HomeView(ListView):
 class ItemDetailView(DetailView):
     model = Item
     template_name = "product-page.html"
+
+
+def searchView(request):
+    query = request.GET.get('q')
+    lookups = (Q(title__icontains=query) |
+               Q(description__icontains=query) |
+               Q(price__icontains=query) |
+               Q(discount_price__icontains=query) |
+               Q(category__icontains=query)
+               )
+    search_items = Item.objects.filter(lookups)
+
+    context = {
+        'object_list': search_items
+    }
+    return render(request, "home-page.html", context)
 
 
 class PaymentView(View):
