@@ -23,7 +23,6 @@ def create_ref_code():
     return ''.join(random.sample(string.ascii_lowercase + string.digits, k=20))
 
 
-
 class HomeView(ListView):
     model = Item
     paginate_by = 8
@@ -46,7 +45,7 @@ def searchView(request):
     search_items = Item.objects.filter(lookups)
 
     context = {
-        'object_list': search_items
+        'object_list': search_items,
     }
     return render(request, "home-page.html", context)
 
